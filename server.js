@@ -11,10 +11,10 @@ var Twit = require('twit');
 
 
 var client = new Twit({
-  consumer_key: 'QQY9a1KOfB9f9yrDu5TPYNxM1',
-  consumer_secret: 'KFcrYRVEAou07gQwrjNUmHUsJInLa7kz8TdeCMaxSjC3sD0EEM',
-  access_token: '312094689-JpmZ9EJwxUUmZErdzTbagA5zlnndyyXj4ckOVQtE',
-  access_token_secret: 'S6U36toKMU9FZNriCh2MqM4ZbYzbnzQ65l8w6m0ydeqEe'
+  consumer_key: 'p3z3Uya200JQo6itVOOWixkW8',
+  consumer_secret: 'wXMbKhs2OVsCi5UUQaJAIHo2fLR2KGy42FbzZ8vCWsPqsXxBIg',
+  access_token: '277462049-YNaK9sdOazCkG6XrltVWUgynV1olfnMlqPfKTDQm',
+  access_token_secret: 'hQyUBW1MGd2fryHinjqQNrQZjybsoSw5zevwLxIaicHgo'
 });
 
 
@@ -39,7 +39,7 @@ var app = protocol.createServer(function (req, res) {
             var daniel = JSON.parse(body);
             res.writeHead(200, {"Content-Type": "application/json"});
             res.end(body);
-           
+            console.log(daniel.firstname);
 
         client.get('statuses/user_timeline', {screen_name: daniel.firstname, exclude_replies: true, include_rts:true, count: 10 },
             function(err, data, response) {
@@ -53,60 +53,6 @@ var app = protocol.createServer(function (req, res) {
                 }
   
             })
-
-        client.get('statuses/user_timeline', {screen_name: daniel.firstname, exclude_replies: true, include_rts:true, count: 10 },
-            function(err, data, response) {
-                for (var index in data) {
-                    var tweet = data[index];
-                     
-                    console.log(tweet.text + '  ');
-                    console.log(' ');
-
-
-                }
-  
-            })
-
-
-        client.get('statuses/user_timeline', {screen_name: daniel.firstname, exclude_replies: true, include_rts:true, count: 10 },
-            function(err, data, response) {
-                for (var index in data) {
-                    var tweet = data[index];
-                     
-                    console.log(tweet.text + '  ');
-                    console.log(' ');
-
-
-                }
-  
-            })
-
-        client.get('statuses/user_timeline', {screen_name: daniel.firstname, exclude_replies: true, include_rts:true, count: 10 },
-            function(err, data, response) {
-                for (var index in data) {
-                    var tweet = data[index];
-                     
-                    console.log(tweet.text + '  ');
-                    console.log(' ');
-
-
-                }
-  
-            })
-
-        client.get('statuses/user_timeline', {screen_name: daniel.firstname, exclude_replies: true, include_rts:true, count: 10 },
-            function(err, data, response) {
-                for (var index in data) {
-                    var tweet = data[index];
-                     
-                    console.log(tweet.text + '  ');
-                    console.log(' ');
-
-
-                }
-  
-            })
-
 
         });
     }
