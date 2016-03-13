@@ -12,13 +12,19 @@
 
 
 <form id="myForm" onsubmit="return false"; >
-    First name:<br>
-    <input type="text" name="firstname" value="Mickey">
-    <br>
-    Last name:<br>
-    <input type="text" name="lastname" value="Mouse">
-    <br><br>
-    <button id="sendButton">Send Data</button>
+<input type="Text" name="vehicle" value="Teams @"> 
+<input type="checkbox" name="vehicle" value="Bike"> Tweets
+<input type="checkbox" name="vehicle" value="Car" checked="checked"> Mentions
+<br><br>
+<input type="Text" name="vehicle" value="Players @"> 
+<input type="checkbox" name="vehicle" value="Bike"> Tweets
+<input type="checkbox" name="vehicle" value="Car" checked="checked"> Mentions
+<br><br>
+<input type="Text" name="vehicle" value="Search Trending Hastags"> 
+<br><br>
+<input type="Text" name="vehicle" value="Search via keywords"> 
+<br><br>
+<button id="Search">Search</button>
 </form>
 
 <script>
@@ -28,11 +34,9 @@
             type: 'POST',
             url: 'postFile.html',
             data: data,
-            dataType:'json',
             success: function (data) {
+                alert('success '+data);
                 var struct= JSON.parse(data);
-                alert('success '+ struct);
-                
             },
             error: function (xhr, status, error) {
                 console.log('Error: ' + error.message);
