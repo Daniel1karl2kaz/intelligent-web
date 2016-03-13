@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Ajax form</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+
+</head>
+<body>
+<h1>This is my form</h1>
+
+
+<form id="myForm" onsubmit="return false"; >
+    First name:<br>
+    <input type="text" name="firstname" value="Mickey">
+    <br>
+    Last name:<br>
+    <input type="text" name="lastname" value="Mouse">
+    <br><br>
+    <button id="sendButton">Send Data</button>
+</form>
+
+<script>
+
+    function sendAjaxQuery(url, data) {
+        $.ajax({
+            type: 'POST',
+            url: 'postFile.html',
+            data: data,
+            dataType:'json',
+            success: function (data) {
+                var struct= JSON.parse(data);
+                alert('success '+ struct);
+                
+            },
+            error: function (xhr, status, error) {
+                console.log('Error: ' + error.message);
+               alert('error connecting');
+            }
+        });
+    }
+
+
+    $.fn.serializeObject = function () {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function () {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+
+    function sendData() {
+        var form = document.getElementById('myForm');
+        sendAjaxQuery('http://localhost:3000/', JSON.stringify($('form').serializeObject()));
+    }
+
+
+    var sendButton = document.getElementById('sendButton');
+    sendButton.onclick = sendData;
+
+</script>
+
+
+</body>
+</html>
