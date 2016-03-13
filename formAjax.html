@@ -11,20 +11,24 @@
 <h1>This is my form</h1>
 
 
-<form id="myForm" onsubmit="return false"; >
-    First name:<br>
-    <input type="text" name="firstname" value="Mickey">    
-    <br>
-    <br><input type="checkbox" name="checkers" value="Micke">    
-    <br>
-    Last name:<br>
-    <input type="text" name="lastname" value="Mouse">
-    <br><br>
-    <button id="sendButton">Send Data</button>
+<form id="myForm" onsubmit="return false"; >   
+   
+<input type="text" name="first" placeholder="Team Name">   
+<input type="checkbox" name="checktweet1" placeholder="Tweets"> Tweets
+<input type="checkbox" name="checkmentions1" placeholder="Mentions" > Mentions  
+<br><br>   
+<input type="text" name="last" placeholder="PLayer Name">
+<input type="checkbox" name="checktweet2" placeholder="Bike"> Tweets
+<input type="checkbox" name="checkmentions2" placeholder="Car" > Mentions
+<br><br>
+<input type="Text" name="hashtag" placeholder="Search Trending Hastags"> 
+<br><br>
+<input type="Text" name="keyword" placeholder="Search via keywords"> 
+<br><br>
+<button id="sendButton">Send Data</button>
 </form>
 
 <script>
-
     function sendAjaxQuery(url, data) {
         $.ajax({
             type: 'POST',
@@ -41,8 +45,6 @@
             }
         });
     }
-
-
     $.fn.serializeObject = function () {
         var o = {};
         var a = this.serializeArray();
@@ -58,16 +60,12 @@
         });
         return o;
     };
-
     function sendData() {
         var form = document.getElementById('myForm');
         sendAjaxQuery('http://localhost:3000/', JSON.stringify($('form').serializeObject()));
     }
-
-
     var sendButton = document.getElementById('sendButton');
     sendButton.onclick = sendData;
-
 </script>
 
 
