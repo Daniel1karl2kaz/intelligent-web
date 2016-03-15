@@ -1,22 +1,15 @@
-/**
- * Created by fabio on 18/02/15.
- */
 var protocol = require('http');
 var static = require('node-static');
 var util = require('util');
 var url = require('url');
 var querystring = require('querystring');
 var Twit = require('twit');
-
-
-
 var client = new Twit({
-  consumer_key: 'QQY9a1KOfB9f9yrDu5TPYNxM1',
-  consumer_secret: 'KFcrYRVEAou07gQwrjNUmHUsJInLa7kz8TdeCMaxSjC3sD0EEM',
-  access_token: '312094689-JpmZ9EJwxUUmZErdzTbagA5zlnndyyXj4ckOVQtE',
-  access_token_secret: 'S6U36toKMU9FZNriCh2MqM4ZbYzbnzQ65l8w6m0ydeqEe'
+  consumer_key: 'EGGQgrH4lCA8xUxFuNVizTgyU',
+  consumer_secret: 'Y50XRwHUntrsvcimeO3dLeJOBoLfwdjWxg3gwequw23YyfW5NL',
+  access_token: '255663300-78cjb4s4cnUXPTrQKTPv63bk0qnEbrI8QNQfWQXW',
+  access_token_secret: 'P7b0F6cUgf94jEu2SRFkGlWL8YuwKnVULuAlS4qpcqFEN'
 });
-
 
 var file = new (static.Server)();
 var portNo = 3001;
@@ -35,25 +28,92 @@ var app = protocol.createServer(function (req, res) {
                 req.connection.destroy();
             }
         });
-
         req.on('end', function () {
-            var daniel = JSON.parse(body);
+            var string = JSON.parse(body);
             res.writeHead(200, {"Content-Type": "application/json"});
             res.end(body);
-           
-
-        client.get('statuses/user_timeline', {screen_name: daniel.firstname, exclude_replies: true, include_rts:true, count: 10 },
-            function(err, data, response) {
-                for (var index in data) {
-                    var tweet = data[index];
-                     
-                    console.log(tweet.text + '  ');
-                    console.log(' ');
-
-
+            //console.log(string);
+            if (string.checktweet1 = 'on') {
+              client.get('statuses/user_timeline', {screen_name: string.teamname, count:1},
+                function(err,data,response) {
+                  for(var index in data){
+                      var tweet = data[index];
+                      console.log(body);
+                      console.log(tweet.text + ' ')
+                  }
+                })
+            }
+            if (string.checkmentions1 = 'on'){
+              client.get('search/tweets', {q:string.teamname, count:1 },
+                function(err,data,response){
+                  for(var index in data.statuses){
+                    var tweet = data.statuses[index];
+                    console.log(body);
+                    console.log(tweet.text +'');
+                  }
+                })
+            }
+            if (string.checktweet2 = 'on'){
+              client.get('statuses/user_timeline', {screen_name: string.playername, count:1},
+                function(err,data,response) {
+                  for(var index in data){
+                      var tweet = data[index];
+                      console.log(body);
+                      console.log(tweet.text + ' ')
+                  }
+                })
+            }
+            if (string.checkmentions2 = 'on'){
+              client.get('search/tweets', {q:string.playername, count:1},
+              function(err,data,response){
+                for(var index in data.statuses){
+                  var tweet = data.statuses[index];
+                  console.log(body);
+                  console.log(tweet.text +'');
                 }
-  
+              })
+            }
+            client.get('search/tweets', {q: string.hashtag, count:1},
+            function(err,data,response){
+              for(var index in data.statuses) {
+                  var tweet =data.statuses[index];
+                  console.log(body);
+                  console.log(tweet.text+ '')
+              }
             })
+            client.get('serach/tweets', {q: string.keyword, count:1},
+            function(err,data,response){
+              for(var index in data.statuses){
+                  var tweet = data.statuses[index];
+                  console.log(body);
+                  console.log(tweet.text +'')
+              }
+            })
+            //console.log(body);
+             /**client.get('statuses/user_timeline', {screen_name: string.teamname, count:2 },
+                  function(err, data,response) {
+                    for (var index in data){
+                         var tweet = data[index];
+
+                         console.log(tweet.text + ' ');
+                    }
+                  }) **/
+
+              /**client.get('search/tweets', { q: string.teamname, count:5 },
+                  function(err,data,response){
+                    for(var index in data.statuses) {
+                        var tweet =data.statuses[index];
+                        console.log(tweet.text+ '')
+                    }
+                  }) **/
+              /**client.get('search/tweets', {q: string.hashtag, count:5},
+                  function (err,data,response) {
+                    for (var index in data.statuses){
+                          var tweet = data.statuses[index];
+                      console.log(tweet.text + '');
+                    }
+
+                  })**/
 
 
         });
