@@ -85,9 +85,21 @@ var app = protocol.createServer(function (req, res) {
               })
             }
 
+        // function tweets(tweet){
+        //     var lists = []
+        //     var listsb = []
+        //     lists = lists.push(tweet.text);
+            
+        //     var regex = /\w+/i;
 
+        //     for ( i = 0 ; i < lists.length; i++) {
+        //         console.log(lists[i])
+        //     }  
+            
+            
+        // }
 
-        });
+        // });
     }
 
     else {
