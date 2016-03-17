@@ -42,9 +42,9 @@ var app = protocol.createServer(function (req, res) {
                 function(err,data,response) {
                   for(var index in data){
                       var tweet = data[index];
-                      //console.log(' ');
-                      //console.log(tweet.text);
-                      tweets(tweet);
+                      console.log(' ');
+                      console.log(tweet.text);
+                      //tweets(tweet);
                   }
                 })
             }
@@ -54,9 +54,9 @@ var app = protocol.createServer(function (req, res) {
                   for(var index in data.statuses){
                     var tweet = data.statuses[index];
                     //console.log(body);
-                    //console.log(tweet.text);
-                    //console.log(' ');
-                    tweets(tweet);
+                    console.log(tweet.text);
+                    console.log(' ');
+                    //tweets(tweet);
                   }
                 })
             }
@@ -66,9 +66,9 @@ var app = protocol.createServer(function (req, res) {
                   for(var index in data){
                       var tweet = data[index];
                      // console.log(body);
-                      // console.log(tweet.text);
-                      // console.log(' ');
-                      tweets(tweet);
+                      console.log(tweet.text);
+                      console.log(' ');
+                      //tweets(tweet);
                   }
                 })
             }
@@ -77,10 +77,10 @@ var app = protocol.createServer(function (req, res) {
                function(err,data,response){
                 for(var index in data.statuses){
                   var tweet = data.statuses[index];
-                  // console.log(tweet.text);
-                  // console.log(' ');
+                   console.log(tweet.text);
+                   console.log(' ');
 
-                  tweets(tweet);
+                  //tweets(tweet);
                 }
               })
             }
