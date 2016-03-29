@@ -4,45 +4,58 @@
     <meta charset="UTF-8">
     <title>Ajax form</title>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+
 </head>
 <body>
-
+<h1>This is my form</h1>
 
 <form id="myForm" onsubmit="return false;">
   <input type="text" name="teamname" placeholder="Team Name">
-  <input type="checkbox" name="checktweet1" placeholder="Tweets",> Tweets
-  <input type="checkbox" name="checkmentions1" placeholder="Mentions" > Mentions
+  <input type="checkbox" name= "checktweet1"> Tweets
+  <input type="checkbox" name= "checkmentions1"> Mentions
   <br><br>
   <input type="text" name="playername" placeholder="Player Name">
-  <input type="checkbox" name="checktweet2" placeholder="Bike"> Tweets
-  <input type="checkbox" name="checkmentions2" placeholder="Car" > Mentions
+  <input type="checkbox" name="checktweet2"> Tweets
+  <input type="checkbox" name="checkmentions2"> Mentions
   <br><br>
   <input type="Text" name="hashtag" placeholder="Search Trending Hastags">
   <br><br>
   <input type="Text" name="keyword" placeholder="Search via keywords">
   <br><br>
   <button id="sendButton">Send Data</button>
-</form>
+</form>                   
 
+<div id="plxwork">
+  
+</div>
 <script>
-function sendAjaxQuery(url, data) {
- $.ajax({
-     type: 'POST',
-     url: 'postFile.html',
-     dataType: 'json',
-     data: data,
-     success: function (data) {
-         alert('success '+data);
-         var struct= JSON.parse(data);
-     },
-     error: function (xhr, status, error) {
-         console.log('Error: ' + error.message);
-         alert('error connecting');
-     }
- });
-}
 
-$.fn.serializeObject = function () {
+    function sendAjaxQuery(url, data) {
+        $.ajax({
+            type: 'POST',
+            url: 'postFile.html',
+            data: data,
+            dataType:'json',
+            success: function (data) {
+                //alert('success '+data);
+                //var struct= JSON.parse(data);
+              //  var map = [];
+                //map.push(data.geo.coordinates[0]);
+                //map.push(data.geo.coordinates[1]);
+                //for (var i=0; i<data[0].length)
+                //$("#plxwork").append("<p>"+data+"hello Daniel</p>");
+                console.log(data);
+            },
+            error: function (xhr, status, error) {
+                console.log('Error: ' + error.message);
+               alert('error connecting');
+            }
+        });
+    }
+
+
+    $.fn.serializeObject = function () {
         var o = {};
         var a = this.serializeArray();
         $.each(a, function () {
