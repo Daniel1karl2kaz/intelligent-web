@@ -1,87 +1,162 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <meta charset="UTF-8">
-    <title>Ajax form</title>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <meta charset="UTF-8">
+  <style type="text/css">
+  html { height: 100% }
+  body { height: 100%; margin: 0; padding: 0 }
+  #map-canvas { height: 100% }
+  </style>
+  <title>Ajax form</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCNsIktQ8a4Pnpg4_Lk4JSD6jd1uAdqe5g&sensor=false"></script>
+
 
 
 </head>
 <body>
-<h1>This is my form</h1>
+  <h1>This is my form</h1>
 
-<form id="myForm" onsubmit="return false;">
-  <input type="text" name="teamname" placeholder="Team Name">
-  <input type="checkbox" name= "checktweet1"> Tweets
-  <input type="checkbox" name= "checkmentions1"> Mentions
-  <br><br>
-  <input type="text" name="playername" placeholder="Player Name">
-  <input type="checkbox" name="checktweet2"> Tweets
-  <input type="checkbox" name="checkmentions2"> Mentions
-  <br><br>
-  <input type="Text" name="hashtag" placeholder="Search Trending Hastags">
-  <br><br>
-  <input type="Text" name="keyword" placeholder="Search via keywords">
-  <br><br>
-  <button id="sendButton">Send Data</button>
-</form>                   
+  <form id="myForm" onsubmit="return false;">
+    <input type="text" name="teamname" placeholder="Team Name">
+    <input type="checkbox" name= "checktweet1"> Tweets
+    <input type="checkbox" name= "checkmentions1"> Mentions
+    <br><br>
+    <input type="text" name="playername" placeholder="Player Name">
+    <input type="checkbox" name="checktweet2"> Tweets
+    <input type="checkbox" name="checkmentions2"> Mentions
+    <br><br>
+    <input type="Text" name="hashtag" placeholder="Search Trending Hastags">
+    <br><br>
+    <input type="Text" name="keyword" placeholder="Search via keywords">
+    <br><br>
+    <button id="sendButton">Send Data</button>
 
-<div id="plxwork">
-  
-</div>
-<script>
+  </form>
+  <div class="map"></div>
+  <div id="plxwork">
 
-    function sendAjaxQuery(url, data) {
-        $.ajax({
-            type: 'POST',
-            url: 'postFile.html',
-            data: data,
-            dataType:'json',
-            success: function (data) {
-                //alert('success '+data);
-                //var struct= JSON.parse(data);
-              //  var map = [];
-                //map.push(data.geo.coordinates[0]);
-                //map.push(data.geo.coordinates[1]);
-                //for (var i=0; i<data[0].length)
-                //$("#plxwork").append("<p>"+data+"hello Daniel</p>");
-                console.log(data);
-            },
-            error: function (xhr, status, error) {
-                console.log('Error: ' + error.message);
-               alert('error connecting');
-            }
-        });
-    }
+  </div>
+  <script>
+  function sendAjaxQuery(url, data) {
+    $.ajax({
+      type: 'POST',
+      url: 'postFile.html',
+      data: data,
+      dataType:'json',
+      success: function (data) {
 
+var mapp = [];
+console.log(data)
+        function initialize(){
 
-    $.fn.serializeObject = function () {
-        var o = {};
-        var a = this.serializeArray();
-        $.each(a, function () {
-            if (o[this.name] !== undefined) {
-                if (!o[this.name].push) {
-                    o[this.name] = [o[this.name]];
-                }
-                o[this.name].push(this.value || '');
-            } else {
-                o[this.name] = this.value || '';
-            }
-        });
-        return o;
-    };
+                   for (index in data){
+                     for (var i in data[index].coordinates)
+                     if (data[index].geo != 'null'){
+                      mapp.push(data[index].coordinates[i])
 
-    function sendData() {
-        var form = document.getElementById('myForm');
-        sendAjaxQuery('http://localhost:3000/', JSON.stringify($('form').serializeObject()));
-    }
+                     }
+                   }
+console.log(mapp)
+        //  $("#plxwork").append("<p>"+mapp+"</p>");
+
+          var lat = 53.381129
+          var lng = -1.470085
+          var myLatlng = new google.maps.LatLng(lat, lng);
+          var mapOptions = { center: myLatlng, zoom: 10 }
+          map = new google.maps.Map(document.getElementById("map-canvas"),  mapOptions);
+          for (i =0; i < mapp.length-1; i+=2){
+            for (j=0; j <mapp[i+1].length - 1; j++){
 
 
-    var sendButton = document.getElementById('sendButton');
-    sendButton.onclick = sendData;
 
-</script>
+            var markers = [];
+            var myLatlng2 = new google.maps.LatLng(mapp[i+1][j+1], mapp[i+1][j]);
+            var marker = new google.maps.Marker({
+              id: i,
+              position: myLatlng2,
+              map: map,
+            //  title: '@' + tweet.user.screen_name + ': ' + tweet.text,
+            //  icon: {
+              //  url: tweet.user.profile_image_url,
+            //  }
+            });
+
+            //markers.push(marker);
+
+            var infowindow = new google.maps.InfoWindow({
+              content: data[i].text,
+              maxWidth: 200
+            });
+
+            infowindow.open(map, marker);
+
+            google.maps.event.addListener(marker, 'click', function() {
+              infowindow.open(map, marker);
+            });
 
 
-</body>
-</html>
+          //getData(lat, lng, processData(data));
+}
+        }
+
+
+
+
+
+}
+
+           google.maps.event.addDomListener(window, 'load', initialize());
+
+
+
+
+
+
+        //  $("#plxwork").append("<p>"+data[index].coordinates[i]+"</p>");
+
+
+
+
+      },
+      error: function (xhr, status, error) {
+        console.log('Error: ' + error.message);
+        alert('error connecting');
+      }
+    });
+  }
+  $.fn.serializeObject = function () {
+      var o = {};
+      var a = this.serializeArray();
+      $.each(a, function () {
+          if (o[this.name] !== undefined) {
+              if (!o[this.name].push) {
+                  o[this.name] = [o[this.name]];
+              }
+              o[this.name].push(this.value || '');
+          } else {
+              o[this.name] = this.value || '';
+          }
+      });
+      return o;
+  };
+  function sendData() {
+    var form = document.getElementById('myForm');
+    sendAjaxQuery('http://localhost:3000/', JSON.stringify($('form').serializeObject()));
+  }
+  var sendButton = document.getElementById('sendButton');
+  sendButton.onclick = sendData;
+
+
+
+
+
+
+    </script>
+  </head>
+  <body>
+    <h1>Where I work</h1>
+    <div id="map-canvas" style="background-color:#FFD700;width:50%;height:300pt;align:center;"/>
+    <div><p>I work at the Department of Computer Science1</p></div>
+  </body>
+  </html>
