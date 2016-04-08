@@ -15,18 +15,6 @@ var client = new Twit({
   access_token_secret: 'S6U36toKMU9FZNriCh2MqM4ZbYzbnzQ65l8w6m0ydeqEe'
 });
 
-// var connection = mysql.createConnection(
-//     {
-//       host     : 'stusql.dcs.shef.ac.uk',
-//         port     : '3306',
-//         user     : 'team086',
-//         password : 'c8f56171',
-//         database : 'team086'
-//
-//     }
-// );
-//
-// connection.connect();
 
 var file = new (static.Server)();
 var portNo = 3001;
@@ -49,48 +37,58 @@ var app = protocol.createServer(function (req, res) {
         var string = JSON.parse(body);
         res.writeHead(200, {"Content-Type": "application/json"});
 
+
         if (string.checktweet1 == 'on') {
           tweets(string.teamname)
-      }
-      if (string.checkmentions1 == 'on'){
-         mentions(string.teamname)
-      }
-      if (string.checktweet2 == 'on'){
-        tweets(string.playername)
-      }
+        }
+        if (string.checkmentions1 == 'on'){
+          mentions(string.teamname)
+        }
+        if (string.checktweet2 == 'on'){
+          tweets(string.playername)
+        }
 
-      if (string.checkmentions2 == 'on'){
+        if (string.checkmentions2 == 'on'){
           mentions(string.playername)
+        }
+
+      });
+
+      jsonx = {};
+
+
+      function functionName(mentions, tweets) {
+
+
       }
 
-   });
+      function mentions(x){
+        client.get('search/tweets', {q:"@"+x, count:1},
+        function (err,data){
+          for(var index in data.statuses){
+            var tweet = data.statuses[index];
+            console.log(tweet.text);
 
-   function mentions(x){
-     client.get('search/tweets', {q:"@"+x, count:1},
-      function(err,data,response){
-       for(var index in data.statuses){
-         var tweet = data.statuses[index];
-          console.log(tweet.text);
-          console.log(" ")
+          }
+        })
+      }
+
+     jsonx = {};
+      function tweets(y){
+        client.get('statuses/user_timeline', {screen_name:"@"+y, count:1},
+        function(err,data) {
+          for(var index in data){
+            var tweet = data[index];
+            console.log(tweet.text);
+            json[index] = tweet
+
+          }
+               res.end(JSON.stringify(jsonx));
+        })
+      }
 
 
-       }
-     })
-   }
 
-   function tweets(y){
-     client.get('statuses/user_timeline', {screen_name:"@"+y, count:1},
-       function(err,data,response) {
-         for(var index in data){
-             var tweet = data[index];
-             console.log(tweet.text);
-             console.log(" ")
-
-         }
-
-       })
-
-   }
 
     }
 
