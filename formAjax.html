@@ -102,12 +102,14 @@
 
     </form>
 
-    <div class="map"></div>
+      <div class="map"></div>
     <div id="plxwork": style="width: 50%; height: 500px; border: 50px invisible;  overflow-y: auto;">
 </div>
 <div id="plxwork2": style="width: 50%; height: 500px; float:left; overflow-y: auto;">
 </div>
 <div id="plxwork3": style="width: 50%; height: 500px; float:right; overflow-y: auto;">
+</div>
+<div id="plxwork4": style="width: 50%; height: 500px; float: top-left; ">
 </div>
 
     </div>
@@ -128,7 +130,7 @@
              $("#plxwork").append("<p>"+"AUTHOR: "+x+data[index].user.name+"   "+"@"+data[index].user.screen_name+"</p>")
              $("#plxwork").append("<p>"+"TWEET: "+"  "+data[index].text+"</p>")
                    }
-            }
+                   }
 
             function sortObject (mydict) {
 
