@@ -7,7 +7,14 @@ var Twit = require('twit');
 var mysql = require('mysql');
 
 
-
+/**
+* Client variable is an object of the twitter api
+* Objects in the client include the consumer_key, consumer_secret, access_token, access_token_secret
+* @param consumer_key
+* @param consumer_secret
+* @param access_token
+* @param access_token_secret
+**/
 var client = new Twit({
   consumer_key: 'QQY9a1KOfB9f9yrDu5TPYNxM1',
   consumer_secret: 'KFcrYRVEAou07gQwrjNUmHUsJInLa7kz8TdeCMaxSjC3sD0EEM',
@@ -17,8 +24,8 @@ var client = new Twit({
 
 
 
-var file = new (static.Server)();
-var portNo = 3001;
+var file = new (static.Server)();  //creates  new static server
+var portNo = 3001   // port number server is run on
 var app = protocol.createServer(function (req, res) {
   var pathname = url.parse(req.url).pathname;
   if ((req.method == 'POST') && (pathname == '/postFile.html')) {
@@ -38,17 +45,19 @@ var app = protocol.createServer(function (req, res) {
         var string = JSON.parse(body);
         res.writeHead(200, {"Content-Type": "application/json"});
 
-
+        // if the checkbox for team tweets is on run the function for tweets
         if (string.checktweet1 == 'on') {
           tweets(string.teamname)
         }
+        // if the checkbox for team mention is on run the function for mentions
         if (string.checkmentions1 == 'on'){
           mentions(string.teamname)
         }
+        // if the checkbox for player tweets is on run the function for tweets
         if (string.checktweet2 == 'on'){
           tweets(string.playername)
         }
-
+        // if the checkbox for player mention is on run the function for mentions
         if (string.checkmentions2 == 'on'){
           mentions(string.playername)
         }
@@ -71,6 +80,13 @@ var app = protocol.createServer(function (req, res) {
 // }
 // )
 jsonx = {};
+/**
+* Query the twitter api and retrieve tweets from twitter
+* The tweets are then stored onto the web interface
+* @param teamname or playername
+* @return the mentions of the user inputted
+* @see tweets
+**/
       function mentions(x){
         client.get('search/tweets', {q:"@"+x, count:20},
         function (err,data){
@@ -83,7 +99,13 @@ jsonx = {};
         })
       }
 
-
+/**
+* Query the twitter api and retrieve tweets from twitter
+* The tweets are then stored onto the web interface
+* @param teamname or playername
+* @return the tweets from the user inputted
+* @see tweets
+**/
       function tweets(y){
         client.get('statuses/user_timeline', {screen_name:"@"+y, count:20},
         function(err,data) {
