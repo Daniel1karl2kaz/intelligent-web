@@ -16,6 +16,7 @@ var client = new Twit({
 });
 
 
+
 var file = new (static.Server)();
 var portNo = 3001;
 var app = protocol.createServer(function (req, res) {
@@ -54,41 +55,47 @@ var app = protocol.createServer(function (req, res) {
 
       });
 
-      jsonx = {};
-
-
-      function functionName(mentions, tweets) {
-
-
-      }
-
+// jsonx = {};
+// var clientGet = Promise.promisify(client.get, client);
+//
+// Promise.join(
+//   client.get('search/tweets', {q:string.teamname, count:1}),
+//   client.get('statuses/user_timeline', {screen_name:string.teamname, count:1}),
+//   function(err, data){
+//     for(var index in data.statuses){
+//       var tweet = data.statuses[index];
+//       console.log(tweet.text);
+//       jsonx[index] = tweet
+//   }
+//   res.end(JSON.stringify(jsonx))
+// }
+// )
+jsonx = {};
       function mentions(x){
-        client.get('search/tweets', {q:"@"+x, count:1},
+        client.get('search/tweets', {q:"@"+x, count:20},
         function (err,data){
           for(var index in data.statuses){
             var tweet = data.statuses[index];
             console.log(tweet.text);
-
+            jsonx[index] = tweet
           }
+          res.end(JSON.stringify(jsonx))
         })
       }
 
-     jsonx = {};
+
       function tweets(y){
-        client.get('statuses/user_timeline', {screen_name:"@"+y, count:1},
+        client.get('statuses/user_timeline', {screen_name:"@"+y, count:20},
         function(err,data) {
           for(var index in data){
             var tweet = data[index];
             console.log(tweet.text);
-            json[index] = tweet
+            jsonx[index] = tweet
 
           }
                res.end(JSON.stringify(jsonx));
         })
       }
-
-
-
 
     }
 
