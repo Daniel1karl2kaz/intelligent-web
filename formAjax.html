@@ -11,7 +11,7 @@
   body { height: 100%; margin: 0; padding: 0 }
   #map-canvas { height: 100% }
   </style>
-  <title>Ajax form</title>
+  <title>Query Interface</title>
 
   <!-- Bootstrap Core CSS -->
   <link href="style/css/bootstrap.min.css" rel="stylesheet">
@@ -103,8 +103,13 @@
     </form>
 
     <div class="map"></div>
-    <div id="plxwork">
+    <div id="plxwork": style="width: 50%; height: 500px; border: 50px invisible;  overflow-y: auto;">
 </div>
+<div id="plxwork2": style="width: 50%; height: 500px; float:left; overflow-y: auto;">
+</div>
+<div id="plxwork3": style="width: 50%; height: 500px; float:right; overflow-y: auto;">
+</div>
+
     </div>
     <script>
     function sendAjaxQuery(url, data) {
@@ -117,7 +122,12 @@
           var tweetsA = [];
             for (index in data){
                tweetsA.push(data[index].text)
-               $("#plxwork").append("<p>"+data[index].text+"</p>")
+
+               if (data[index] !== 'undefined'){
+             var x = "<img src = '"+data[index].user.profile_image_url+"'>";
+             $("#plxwork").append("<p>"+"AUTHOR: "+x+data[index].user.name+"   "+"@"+data[index].user.screen_name+"</p>")
+             $("#plxwork").append("<p>"+"TWEET: "+"  "+data[index].text+"</p>")
+                   }
             }
 
             function sortObject (mydict) {
@@ -141,48 +151,73 @@
               return keys
             }
 
-            var activeUsers = []; //an array of all the users in all the retrieved tweet
-            var mostActiveUsers = {}; //an object of the top 10 most active users and their frequency
+            var mostFrequentWords = [];
+                    var frequentWords = [];
+                    var activeUsers = []; //an array of all the users in all the retrieved tweet
+                    var mostActiveUsers = {}; //an object of the top 10 most active users and their frequency
+                    var regex = /\B@\w+/gi; //regular expression to extract all the words containing @
+                    var regex1 = /\w+/gi; //regex to extract all non words symbol
 
-            var regex = /\B@\w+/gi //regular expression to extract all the words containing @
-            var regex1 = /([^@\w ]|[^@\w ])/gi; //regex to extract all non words symbol
+                    for ( i = 0 ; i < tweetsA.length; i++) { //tweetsA is a list of all the retrieved tweets as a string
+                      /* loop through all the retrieved tweets and extract the all the active users*/
+                      while((m = regex.exec(tweetsA[i])) != null) {
+                        activeUsers = activeUsers.concat(m[0]);
+                      }
+                      while((j = regex1.exec(tweetsA[i])) != null) {
+                        frequentWords = frequentWords.concat(j[0]);
+                      }
+                    }
+
+                    // var stopWords = ["https", "http", "t", "co", "s", "i", "an", "it"]
+                    //
+                    // for (i=0; i< frequentWords.length; i++){
+                    //    for (j=0; j<stopWords.length; j++){
+                    //       if(frequentWords[i].indexOf(stopWords[j].key) !== -1) {
+                    //          frequentWords = frequentWords[i].replace(stopWords[j],' ');
+                    //        }
+                    //    }
+                    // }
+
+                    /* loop through all the retrieved tweets and remove any punctuations and hashtag
+                    and return an array of the retrieved tweets */
+                    var arrayOfTweets = tweetsA.map(function (str) {
+                      return str.replace(regex1, '');
+                    });
 
 
-            for ( i = 0 ; i < tweetsA.length; i++) { //tweetsA is a list of all the retrieved tweets as a string
+                    /* loop through all active users in from retrieved tweets, then compute a frequency
+                    of all the active users */
+                    for (i = 0; i < activeUsers.length; i++){
+                      if (activeUsers[i] in mostActiveUsers){
+                        mostActiveUsers[activeUsers[i]] += 1
+                      }else{
+                        mostActiveUsers[activeUsers[i]] = 1
+                      }
+                    }
 
-              /* loop through all the retrieved tweets and extract the all the active users*/
-              while((m = regex.exec(tweetsA[i])) != null) {
-                activeUsers = activeUsers.concat(m[0]);
-              }
-            }
-
-            /* loop through all the retrieved tweets and remove any punctuations and hashtag
-            and return an array of the retrieved tweets */
-            var arrayOfTweets = tweetsA.map(function (str) {
-              return str.replace(regex1, '');
-            });
+                    for (i = 0; i < frequentWords.length; i++){
+                      if (frequentWords[i] in mostFrequentWords){
+                        mostFrequentWords[frequentWords[i]] += 1
+                      }else{
+                        mostFrequentWords[frequentWords[i]] = 1
+                      }
+                    }
 
 
-            /* loop through all active users in from retrieved tweets, then compute a frequency
-            of all the active users */
-            for (i = 0; i < activeUsers.length; i++){
-              if (activeUsers[i] in mostActiveUsers){
-                mostActiveUsers[activeUsers[i]] += 1
-              }else{
-                mostActiveUsers[activeUsers[i]] = 1
-              }
+                    mostActiveUsers = sortObject(mostActiveUsers); //sort the most active users by frequency and retrieve the top 10
+                    mostFrequentWords = sortObject(mostFrequentWords)
 
-            }
+                    for (i in mostActiveUsers){
+                      $("#plxwork2").append("<p>"+mostActiveUsers[i].key+  "   "  +mostActiveUsers[i].val+" tweets" +"</p>")
+                    }
 
-            mostActiveUsers = sortObject(mostActiveUsers); //sort the most active users by frequency and retrieve the top 10
-
-            for (i in mostActiveUsers){
-              $("#plxwork").append("<p>"+mostActiveUsers[i].key+  "   "  +mostActiveUsers[i].val+" tweets" +"</p>")
-            }
+                    for (i in mostFrequentWords){
+                      $("#plxwork3").append("<p>"+mostFrequentWords[i].key+  ":    "  +mostFrequentWords[i].val+"</p>")
+                    }
 
             var mapp = [];
             //Here we process the tweet information getting the bits we need for the map generation
-            
+
             function initialize(){
               for (index in data){
                 for (var i in data[index].coordinates)
