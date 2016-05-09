@@ -112,19 +112,48 @@ var app = protocol.createServer(function (req, res) {
       
       }
 
-            
+      function foo(){
+        client.get('statuses/user_timeline', {screen_name:"@"+string.teamname, count:5},
+          function(err,data) {
+            var jsonx = [];
+            for(var index in data){
+              var tweet = data[index];
+
+              jsonx[index] = tweet
+              
+            }
+             res.end(JSON.stringify(jsonx))
+          })
+
+      }    
+
+        function bar() {
+          client.get('search/tweets', {q:"@"+string.teamname, count:5},
+            function (err,data){
+              var jsonx = [];
+              for(var index in data.statuses){
+                var tweet = data.statuses[index];
+
+                jsonx[index] = tweet 
+                
+              }
+            res.end(JSON.stringify(jsonx))
+
+            })
+        }        
+              
         
         var doSometing = function(){
 
-          if (string.checktweet1 && string.checkmentions1 == 'on'){
-            tweets(string.teamname, mentions)
+         if (string.checktweet1 && string.checkmentions1 == 'on'){
+            return(tweets(string.teamname, mentions))
          }  
-         //  if (string.checktweet1 == 'on'){
-         //  return(tweets())
-         // }
-         // if (string.checkmentions1 == 'on'){
-         //  return(mentions())
-         // }
+         if (string.checktweet1 == 'on'){
+           return(foo())
+         }
+         if (string.checkmentions1 == 'on'){
+          return(bar())
+         }
         
          
         }
