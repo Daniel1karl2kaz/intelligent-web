@@ -1,12 +1,3 @@
-var protocol = require('http');
-var static = require('node-static');
-var util = require('util');
-var url = require('url');
-var querystring = require('querystring');
-var Twit = require('twit');
-var mysql = require('mysql');
-
-
 /**
 * Client variable is an object of the twitter api
 * Objects in the client include the consumer_key, consumer_secret, access_token, access_token_secret
@@ -15,6 +6,29 @@ var mysql = require('mysql');
 * @param access_token
 * @param access_token_secret
 **/
+
+var protocol = require('http');
+var static = require('node-static');
+var util = require('util');
+var url = require('url');
+var querystring = require('querystring');
+var Twit = require('twit');
+var mysql = require('mysql');
+var async = require('async');
+
+
+var connection = mysql.createConnection(
+    {
+      host     : '127.0.0.1',
+      port     : '3306',
+      user     : 'root',
+      password : '1234',
+      database : 'intelligent'
+    }
+);
+connection.connect();
+
+
 var client = new Twit({
   consumer_key: 'QQY9a1KOfB9f9yrDu5TPYNxM1',
   consumer_secret: 'KFcrYRVEAou07gQwrjNUmHUsJInLa7kz8TdeCMaxSjC3sD0EEM',
@@ -23,9 +37,8 @@ var client = new Twit({
 });
 
 
-
-var file = new (static.Server)();  //creates  new static server
-var portNo = 3001   // port number server is run on
+var file = new (static.Server)();
+var portNo = 3001;
 var app = protocol.createServer(function (req, res) {
   var pathname = url.parse(req.url).pathname;
   if ((req.method == 'POST') && (pathname == '/postFile.html')) {
@@ -44,82 +57,88 @@ var app = protocol.createServer(function (req, res) {
       req.on('end', function () {
         var string = JSON.parse(body);
         res.writeHead(200, {"Content-Type": "application/json"});
+        
 
-        // if the checkbox for team tweets is on run the function for tweets
-        if (string.checktweet1 == 'on') {
-          tweets(string.teamname)
-        }
-        // if the checkbox for team mention is on run the function for mentions
-        if (string.checkmentions1 == 'on'){
-          mentions(string.teamname)
-        }
-        // if the checkbox for player tweets is on run the function for tweets
-        if (string.checktweet2 == 'on'){
-          tweets(string.playername)
-        }
-        // if the checkbox for player mention is on run the function for mentions
-        if (string.checkmentions2 == 'on'){
-          mentions(string.playername)
-        }
+        jsonx = {};
+        jsonz = {};
+        
+      
 
-      });
+        function tweets(query, cba) {
+          client.get('search/tweets', {q:"@"+query, count:1},
+            function (err,data){
+              var myTweetsArray = [];
+              for(var index in data.statuses){
+                var tweet = data.statuses[index];
 
-// jsonx = {};
-// var clientGet = Promise.promisify(client.get, client);
-//
-// Promise.join(
-//   client.get('search/tweets', {q:string.teamname, count:1}),
-//   client.get('statuses/user_timeline', {screen_name:string.teamname, count:1}),
-//   function(err, data){
-//     for(var index in data.statuses){
-//       var tweet = data.statuses[index];
-//       console.log(tweet.text);
-//       jsonx[index] = tweet
-//   }
-//   res.end(JSON.stringify(jsonx))
-// }
-// )
-jsonx = {};
-/**
-* Query the twitter api and retrieve tweets from twitter
-* The tweets are then stored onto the web interface
-* @param teamname or playername
-* @return the mentions of the user inputted
-* @see tweets
-**/
-      function mentions(x){
-        client.get('search/tweets', {q:"@"+x, count:20},
-        function (err,data){
-          for(var index in data.statuses){
-            var tweet = data.statuses[index];
-            console.log(tweet.text);
-            jsonx[index] = tweet
-          }
-          res.end(JSON.stringify(jsonx))
-        })
+                myTweetsArray[index] = tweet 
+                //console.log(tweet.text)
+              }
+              // console.log(cba+'xxxxxx');
+             cba(myTweetsArray, mergeTweets);
+
+            })
+        }
+         
+        
+          
+       function mentions(tweetsArray, cba){
+        client.get('statuses/user_timeline', {screen_name:"@"+string.teamname, count:1},
+          function(err,data,cb) {
+            var myMentionsArray = [];
+            for(var index in data){
+              var tweet = data[index];
+
+              myMentionsArray[index] = tweet
+              // console.log(tweet.text);
+            }
+            
+           //  var final = $.merge(jsonx, jsonz)
+           // console.log(cba+'xxxxxxxxxxxxxxx')
+
+             cba(tweetsArray,myMentionsArray);
+          })
+
       }
 
-/**
-* Query the twitter api and retrieve tweets from twitter
-* The tweets are then stored onto the web interface
-* @param teamname or playername
-* @return the tweets from the user inputted
-* @see tweets
-**/
-      function tweets(y){
-        client.get('statuses/user_timeline', {screen_name:"@"+y, count:20},
-        function(err,data) {
-          for(var index in data){
-            var tweet = data[index];
-            console.log(tweet.text);
-            jsonx[index] = tweet
-
-          }
-               res.end(JSON.stringify(jsonx));
-        })
+      function mergeTweets(arrayT, arrayM) {
+        var resArray = arrayT.concat(arrayM)
+        resJson = {};
+        for (index in resArray) {
+          resJson[index] = resArray[index]
+        }
+        console.log(resJson)
+        res.end(JSON.stringify(resJson));
+      
       }
+
+            
+        
+        var doSometing = function(){
+
+          if (string.checktweet1 && string.checkmentions1 == 'on'){
+            tweets(string.teamname, mentions)
+         }  
+         //  if (string.checktweet1 == 'on'){
+         //  return(tweets())
+         // }
+         // if (string.checkmentions1 == 'on'){
+         //  return(mentions())
+         // }
+        
+         
+        }
+        
+        doSometing()
+
+
+
+ 
+     });
+
 
     }
+
 
     else {
       file.serve(req, res, function (err, result) {
