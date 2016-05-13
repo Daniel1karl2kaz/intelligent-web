@@ -15,18 +15,11 @@ var querystring = require('querystring');
 var Twit = require('twit');
 var mysql = require('mysql');
 var async = require('async');
+var MongoClient = require('mongodb').MongoClient
+var mongodb = require('mongodb')
 
+var dan ='mongodb://localhost:27017/daniel';
 
-var connection = mysql.createConnection(
-    {
-      host     : '127.0.0.1',
-      port     : '3306',
-      user     : 'root',
-      password : '1234',
-      database : 'intelligent'
-    }
-);
-connection.connect();
 
 
 var client = new Twit({
@@ -57,7 +50,47 @@ var app = protocol.createServer(function (req, res) {
       req.on('end', function () {
         var string = JSON.parse(body);
         res.writeHead(200, {"Content-Type": "application/json"});
-        
+
+var twetions = function(tweet){        
+  MongoClient.connect(dan, function (err,db) {
+  if (err){
+    console.log('Unable to connect to mongodb',err);
+  }else {
+    console.log('connection established at ',dan);
+    var collection = db.collection('twitter');
+    var query = tweet
+    collection.insert(query,function (err,result) {
+      if (err){
+        console.log("data wasnt added",err);
+      }else {
+        console.log('inserted into collection');
+      }
+      //db.close();
+    })
+  }
+})        
+}
+function querydb(){
+  MongoClient.connect(dan, function (err,db) {
+  if (err){
+    console.log('Unable to connect to mongodb',err);
+  }else {
+    console.log('connection established at ',dan);
+    var collection = db.collection('twitter');
+    var query = {"teamname":string.teamname};
+    collection.find(query).toArray(function (err,result) {
+      if (err){
+        console.log("data wasnt added",err);
+      }else {
+        //console.log()
+        res.end(JSON.stringify(result));
+        console.log('queried collection');
+      }
+      db.close();
+    })
+  }
+})   
+        }  
 
         jsonx = {};
         jsonz = {};
@@ -70,11 +103,11 @@ var app = protocol.createServer(function (req, res) {
               var myTweetsArray = [];
               for(var index in data.statuses){
                 var tweet = data.statuses[index];
-
+              
                 myTweetsArray[index] = tweet 
-                //console.log(tweet.text)
+                
               }
-              // console.log(cba+'xxxxxx');
+           twetions(data.statuses)
              cba(myTweetsArray, mergeTweets);
 
             })
@@ -90,12 +123,9 @@ var app = protocol.createServer(function (req, res) {
               var tweet = data[index];
 
               myMentionsArray[index] = tweet
-              // console.log(tweet.text);
+              
             }
-            
-           //  var final = $.merge(jsonx, jsonz)
-           // console.log(cba+'xxxxxxxxxxxxxxx')
-
+                twetions(data)
              cba(tweetsArray,myMentionsArray);
           })
 
@@ -107,6 +137,8 @@ var app = protocol.createServer(function (req, res) {
         for (index in resArray) {
           resJson[index] = resArray[index]
         }
+
+
         console.log(resJson)
         res.end(JSON.stringify(resJson));
       
@@ -120,7 +152,7 @@ var app = protocol.createServer(function (req, res) {
               var tweet = data[index];
 
               jsonx[index] = tweet
-              
+              twetions(tweet)
             }
              res.end(JSON.stringify(jsonx))
           })
@@ -135,12 +167,15 @@ var app = protocol.createServer(function (req, res) {
                 var tweet = data.statuses[index];
 
                 jsonx[index] = tweet 
+                twetions(tweet)
                 
               }
             res.end(JSON.stringify(jsonx))
 
             })
-        }        
+        }      
+
+        
               
         
         var doSometing = function(){
@@ -155,7 +190,9 @@ var app = protocol.createServer(function (req, res) {
           return(bar())
          }
         
-         
+         if (string.checktweet2 == 'on'){
+            return(querydb())
+         }
         }
         
         doSometing()
