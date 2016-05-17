@@ -70,6 +70,8 @@ var twetions = function(tweet){
   }
 })        
 }
+
+
 function querydb(){
   MongoClient.connect(dan, function (err,db) {
   if (err){
@@ -77,10 +79,10 @@ function querydb(){
   }else {
     console.log('connection established at ',dan);
     var collection = db.collection('twitter');
-    var query = {"teamname":string.teamname};
+    var query = ({"entities.user_mentions.screen_name" :string.teamname});
     collection.find(query).toArray(function (err,result) {
       if (err){
-        console.log("data wasnt added",err);
+        console.log("data was not added",err);
       }else {
         //console.log()
         res.end(JSON.stringify(result));
@@ -90,7 +92,7 @@ function querydb(){
     })
   }
 })   
-        }  
+}  
 
         jsonx = {};
         jsonz = {};
@@ -113,7 +115,23 @@ function querydb(){
             })
         }
          
-        
+        function search_everything(query, cba) {
+          client.get('search/tweets', {q:query, count:100},
+            function (err,data){
+              var myTweetsArray = [];
+              for(var index in data.statuses){
+                var tweet = data.statuses[index];
+              
+                myTweetsArray[index] = tweet 
+                
+              }
+           // twetions(data.statuses)
+             // cba(myTweetsArray, mergeTweets);
+             console.log(myTweetsArray);
+             cba(myTweetsArray);
+
+            })
+        }      
           
        function mentions(tweetsArray, cba){
         client.get('statuses/user_timeline', {screen_name:"@"+string.teamname, count:1},
@@ -121,7 +139,7 @@ function querydb(){
             var myMentionsArray = [];
             for(var index in data){
               var tweet = data[index];
-
+ 
               myMentionsArray[index] = tweet
               
             }
@@ -139,61 +157,85 @@ function querydb(){
         }
 
 
-        console.log(resJson)
+        // console.log(resJson)
         res.end(JSON.stringify(resJson));
       
       }
 
-      function foo(){
-        client.get('statuses/user_timeline', {screen_name:"@"+string.teamname, count:5},
+      function foo(query){
+        client.get('statuses/user_timeline', {screen_name:"@"+query, count:5},
           function(err,data) {
             var jsonx = [];
             for(var index in data){
               var tweet = data[index];
 
               jsonx[index] = tweet
-              twetions(tweet)
+              
             }
+             twetions(tweet)
              res.end(JSON.stringify(jsonx))
           })
 
       }    
 
-        function bar() {
-          client.get('search/tweets', {q:"@"+string.teamname, count:5},
+        function bar(query) {
+          client.get('search/tweets', {q:"@"+query, count:5},
             function (err,data){
               var jsonx = [];
               for(var index in data.statuses){
                 var tweet = data.statuses[index];
 
                 jsonx[index] = tweet 
-                twetions(tweet)
+                
                 
               }
+              twetions(tweet)
             res.end(JSON.stringify(jsonx))
 
             })
-        }      
-
-        
+        }  
+      
               
         
         var doSometing = function(){
+            console.log(string); 
 
-         if (string.checktweet1 && string.checkmentions1 == 'on'){
-            return(tweets(string.teamname, mentions))
-         }  
-         if (string.checktweet1 == 'on'){
-           return(foo())
+         var query = '';
+         if  (string.checktweet1 == 'on'){
+          query  += string.teamname+' ';
          }
          if (string.checkmentions1 == 'on'){
-          return(bar())
+          query += '@'+string.teamname+' ';
          }
-        
+         if (string.checkmentions2 == 'on'){
+          query += '@'+string.playername+' ';
+         }
          if (string.checktweet2 == 'on'){
-            return(querydb())
+          query += string.playername;
          }
+
+          search_everything(query, function(data){
+            res.end(JSON.stringify(data));
+          });
+         // if (string.checktweet1 && string.checkmentions1 == 'on'){
+         // //    return(tweets(string.teamname, mentions))
+         // // }  
+
+         // // if (string.checktweet1 == 'on'){
+         // //   return(foo(string.teamname))
+         // // }
+         // // if (string.checkmentions1 == 'on'){
+         // //  return(bar(string.teamname))
+         // }
+        
+         // if (string.checktweet2 == 'on'){
+         //    return(foo(string.playername))
+         // }
+         // if (string.checkmentions2 == 'on'){
+         //    return(bar(string.playername))
+         // }
         }
+
         
         doSometing()
 
