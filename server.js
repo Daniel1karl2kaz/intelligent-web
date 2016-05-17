@@ -93,160 +93,68 @@ function querydb(){
   }
 })   
 }  
+   
+         
+        
 
+
+    
+
+
+ 
+    
         jsonx = {};
         jsonz = {};
-        
-      
 
-        function tweets(query, cba) {
-          client.get('search/tweets', {q:"@"+query, count:1},
-            function (err,data){
-              var myTweetsArray = [];
-              for(var index in data.statuses){
-                var tweet = data.statuses[index];
-              
-                myTweetsArray[index] = tweet 
-                
-              }
-           twetions(data.statuses)
-             cba(myTweetsArray, mergeTweets);
-
-            })
-        }
-         
-        function search_everything(query, cba) {
+function flickrapi(query, callback){
+  return new Promise(function(resolve){
+  flickr.get("photos.search", {"text": query, format: "json", page:1, per_page: 200},
+          function(err, data){
+            console.log("resolving with photos");
+          resolve(data);
+  });
+});
+}
+      function search_everything(query) {
+        return new Promise(function(resolve){
           client.get('search/tweets', {q:query, count:100},
             function (err,data){
               var myTweetsArray = [];
               for(var index in data.statuses){
                 var tweet = data.statuses[index];
-              
-                myTweetsArray[index] = tweet 
-                
+                myTweetsArray[index] = tweet
               }
-           // twetions(data.statuses)
-             // cba(myTweetsArray, mergeTweets);
-             console.log(myTweetsArray);
-             cba(myTweetsArray);
-
-            })
-        }      
-          
-       function mentions(tweetsArray, cba){
-        client.get('statuses/user_timeline', {screen_name:"@"+string.teamname, count:1},
-          function(err,data,cb) {
-            var myMentionsArray = [];
-            for(var index in data){
-              var tweet = data[index];
- 
-              myMentionsArray[index] = tweet
-              
-            }
-                twetions(data)
-             cba(tweetsArray,myMentionsArray);
-          })
-
-      }
-
-      function mergeTweets(arrayT, arrayM) {
-        var resArray = arrayT.concat(arrayM)
-        resJson = {};
-        for (index in resArray) {
-          resJson[index] = resArray[index]
-        }
-
-
-        // console.log(resJson)
-        res.end(JSON.stringify(resJson));
       
-      }
-
-      function foo(query){
-        client.get('statuses/user_timeline', {screen_name:"@"+query, count:5},
-          function(err,data) {
-            var jsonx = [];
-            for(var index in data){
-              var tweet = data[index];
-
-              jsonx[index] = tweet
-              
-            }
-             twetions(tweet)
-             res.end(JSON.stringify(jsonx))
-          })
-
-      }    
-
-        function bar(query) {
-          client.get('search/tweets', {q:"@"+query, count:5},
-            function (err,data){
-              var jsonx = [];
-              for(var index in data.statuses){
-                var tweet = data.statuses[index];
-
-                jsonx[index] = tweet 
-                
-                
-              }
-              twetions(tweet)
-            res.end(JSON.stringify(jsonx))
-
+            console.log("resolving with tweets");
+             resolve(myTweetsArray);
             })
-        }  
-      
-              
-        
-        var doSometing = function(){
-            console.log(string); 
-
-         var query = '';
-         if  (string.checktweet1 == 'on'){
-          query  += string.teamname+' ';
-         }
-         if (string.checkmentions1 == 'on'){
-          query += '@'+string.teamname+' ';
-         }
-         if (string.checkmentions2 == 'on'){
-          query += '@'+string.playername+' ';
-         }
-         if (string.checktweet2 == 'on'){
-          query += string.playername;
-         }
-
-          search_everything(query, function(data){
-            res.end(JSON.stringify(data));
           });
-         // if (string.checktweet1 && string.checkmentions1 == 'on'){
-         // //    return(tweets(string.teamname, mentions))
-         // // }  
-
-         // // if (string.checktweet1 == 'on'){
-         // //   return(foo(string.teamname))
-         // // }
-         // // if (string.checkmentions1 == 'on'){
-         // //  return(bar(string.teamname))
-         // }
-        
-         // if (string.checktweet2 == 'on'){
-         //    return(foo(string.playername))
-         // }
-         // if (string.checkmentions2 == 'on'){
-         //    return(bar(string.playername))
-         // }
         }
+                var doSometing = function(){
+                  console.log(string);
 
-        
-        doSometing()
+               var query = '';
+               if  (string.checktweet1 == 'on'){
+                query  += string.teamname+' ';
+               }
+               if (string.checkmentions1 == 'on'){
+                query += '@'+string.teamname+' ';
+               }
+               if (string.checkmentions2 == 'on'){
+                query += '@'+string.playername+' ';
+               }
+               if (string.checktweet2 == 'on'){
+                query += string.playername;
+               }
 
-
-
- 
-     });
-
-
-    }
-
+               var promise = Promise.join(search_everything(query), flickrapi(query),
+                function(tweets, flickr){
+                  res.end(JSON.stringify({tweets:tweets, flickr:flickr}));
+                });
+              }
+              doSometing()
+});
+}
 
     else {
       file.serve(req, res, function (err, result) {
