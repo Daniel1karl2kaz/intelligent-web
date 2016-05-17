@@ -17,7 +17,9 @@ var mysql = require('mysql');
 var async = require('async');
 var MongoClient = require('mongodb').MongoClient
 var mongodb = require('mongodb')
-
+var Flickr = require("node-flickr");
+var keys = {"api_key": "91e0dfe1db951b61d1b1e18b39947a28"}
+flickr = new Flickr(keys);
 var dan ='mongodb://localhost:27017/daniel';
 
 
