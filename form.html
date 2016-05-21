@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xlmns="http://www.w3.org/1999/xhtml"
+      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+      xmlns:dbp="http://dbpedia.org/property/"
+      xmlns:dbo="http://dbpedia.org/ontology/"
+      xmlns:dbr="http://dbpedia.org/resource/"
+      xmlns:xml="	http://www.w3.org/XML/1998/namespace">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Ajax form</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+<form id="myForm" onsubmit="return false;">
+    Date:<br>
+    <input type="text" name="date">
+    <br><br>
+    Team One:<br>
+    <input type="text" name="teamone">
+    <br><br>
+    Team Two:<br>
+    <input type="text" name="teamtwo">
+    <br><br>
+    <button id="sendButton">Send Data</button>
+</form>
+<div id="teamdata"></div>
+
+<script>
+$("#borders").hide();
+function sendAjaxQuery(url, data) {
+  $.ajax({
+    type: 'POST',
+    url: 'postFile.html',
+    data: data,
+    dataType:'json',
+    success: function (data) {
+      console.log(data)
+      var teamdata = $('#teamdata');
+      var rdf = data[0].results.bindings;
+      var clubUri = data[1].club;
+      var clublink = "<a href="+clubUri+">"+rdf[0].club_name.value+"</a>"
+      var managerUri = rdf[0].manager.value;
+      var manager_image = "<img src = "+rdf[0].manager_image.value+">";
+      var managerlink = "<a href =" +managerUri+">"+rdf[0].manager_name.value+"</a>"
+      var man = managerUri.replace('http://dbpedia.org/resource/','');
+      var stadiumUri = rdf[0].stadium.value;
+      var stadium_image = "<img src = "+rdf[0].stadium_image.value+">";
+      var stad = stadiumUri.replace('http://dbpedia.org/resource/','');
+      var stadiumlink = "<a href =" +stadiumUri+">"+rdf[0].stadium_name.value+"</a>"
+
+
+      var team = $("<div class='uri' id="+"team"+" about="+clubUri+"></div>")
+      team.append("<h1 property= 'dbp:clubname' class='literal' xml:lang='en'>"+clublink+"</h1>")
+      team.append("<h1>"+"Description: "+"</h1>"+"<p property= 'dbo:abstract' class='literal' xml:lang='en'>"+rdf[0].description.value+"</p>")
+      teamdata.append(team);
+      var manager = $("<div class='uri' id='manager' property='dbo:manager' about="+managerUri+"></div>")
+      manager.append("<h1 class='uri' property="+'dbr:'+man+">"+"Manager: "+"</h1>"+"<p property='dbp:name' class='literal'>"+managerlink+"</p>")
+      manager.append("<p property='dbo:thumbnail' class='uri'>"+manager_image+"</p>")
+      team.append(manager)
+      var stadium = $("<div class='uri' id='stadium' property= 'dbo:ground' about="+stadiumUri+"></div>")
+      stadium.append("<h1 class='uri' property="+'dbr:'+stad+">"+"Stadium: "+ "</h1>"+"<p property='dbp:name' class='literal'>"+stadiumlink+"</p>")
+      stadium.append("<p property='dbo:thumbnail' class='uri'>"+stadium_image+"</p>")
+      team.append(stadium)
+      var players = $("<div class ='uri' id='players' property= 'dbp:name'>"+"</div>")
+      players.append("<h1>"+"Players:"+"</h1>")
+
+      for (var index in rdf){
+          var player_image = "<img src = '"+rdf[index].player_image.value+"'>";
+          var playerUri = rdf[index].players.value;
+          var playerLink = "<a property='dbp:fullname' href =" +playerUri+">"+rdf[index].player_name.value+"</a>"
+          var play = playerUri.replace('http://dbpedia.org/resource/','');
+          var posUri = rdf[index].player_pos.value
+          var pos = posUri.replace('http://dbpedia.org/resource/','');
+          players.append("<p property='dbo:thumbnail' class='uri'>"+player_image+"</p>")
+          players.append("<p class='uri' property='dbr:"+play+"' "+"about="+playerUri+">"+playerLink+"</p>")
+          players.append("<p property='dbo:birthDate' dataType='http://www.w3.org/2001/XMLSchema#date' >"+rdf[index].player_birthdate.value+"</p>")
+          team.append(players);
+          var position = $("<div id='position' class='uri' property='dbo:position' xml:lang='en' about="+posUri+"></div>");
+          position.append("<p property="+'dbr:'+pos+">"+rdf[index].player_position.value+"</p>")
+          players.append(position)
+      }
+    },
+    error: function (xhr, status, error) {
+        console.log('Error: ' + error.message);
+       alert('error connecting');
+    }
+});
+}
+
+$.fn.serializeObject = function () {
+  var o = {};
+  var a = this.serializeArray();
+  $.each(a, function () {
+    if (o[this.name] !== undefined) {
+      if (!o[this.name].push) {
+        o[this.name] = [o[this.name]];
+      }
+      o[this.name].push(this.value || '');
+    } else {
+      o[this.name] = this.value || '';
+    }
+  });
+  return o;
+};
+function sendData() {
+  var form = document.getElementById('myForm');
+  sendAjaxQuery('http://localhost:3000/', JSON.stringify($('form').serializeObject()));
+}
+var sendButton = document.getElementById('sendButton');
+sendButton.onclick = sendData;
+</script>
+</head>
+</html>
