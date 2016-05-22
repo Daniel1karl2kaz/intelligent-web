@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html xlmns="http://www.w3.org/1999/xhtml"
+      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+      xmlns:dbp="http://dbpedia.org/property/"
+      xmlns:dbo="http://dbpedia.org/ontology/"
+      xmlns:dbr="http://dbpedia.org/resource/"
+      xmlns:xml="	http://www.w3.org/XML/1998/namespace">
+<head lang="en">
+<meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <style type="text/css">
+  html { height: 100% }
+  body { height: 100%; margin: 0; padding: 0 }
+  #map-canvas { height: 100% }
+  </style>
+  <title>Query Interface</title>
+  <!-- Bootstrap Core CSS -->
+  <link href="/style/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link href="/style/css/clean-blog.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCNsIktQ8a4Pnpg4_Lk4JSD6jd1uAdqe5g&sensor=false"></script>
+  <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-inverse  navbar-fixed-top">
+      <div class="container-fluid">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header page-scroll">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="queryInterface.html">Football Knowitalls</a>
+          </div>
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+              <ul class="nav navbar-nav navbar-right">
+                  <li>
+                      <a href="formAjax.html">Home</a>
+                  </li>
+                  <li>
+                      <a href="about.html">Search Engine</a>
+                  </li>
+                  <li>
+                      <a href="post.html">About</a>
+                  </li>
+                  <li>
+                      <a href="contact.html">Contact</a>
+                  </li>
+              </ul>
+          </div>
+          <!-- /.navbar-collapse -->
+      </div>
+      <!-- /.container -->
+  </nav>
+  <!-- Page Header -->
+  <!-- Set your background image for this header on the line below. -->
+  <header class="intro-header" style="background-image: url('style/img/home-bg.jpg')">
+      <div class="container">
+          <div class="row">
+              <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                 <div class="site-heading">
+                   <!-- <hr class="small">
+                     <span class="subheading"></span>
+                  </div>  -->
+              </div>
+          </div>
+      </div>
+  </header>
+<!--
+  <div class="container">
+      <div class="row">
+          <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"> -->
+ <div align="center">
+    <form id="myForm" onsubmit="return false;">
+      <input type="text" name="teamname" placeholder="Team Name">
+      <br>
+      <input type="checkbox" name= "checktweet1"> Tweets
+      <input type="checkbox" name= "checkmentions1"> Mentions
+      <br><br>
+      <input type="text" name="playername" placeholder="Player Name">
+      <br>
+      <input type="checkbox" name="checktweet2"> Tweets
+      <input type="checkbox" name="checkmentions2"> Mentions
+      <br><br>
+      <input type="Text" name="hashtag" placeholder="Search Trending Hastags">
+      <br><br>
+      <input type="Text" name="keyword" placeholder="Search via keywords">
+      <br><br>
+      <input type="checkbox" name="query"> Query Database
+      <br><br>
+      <button id="sendButton">Send Data</button>
+      <br><br>
+    </div>
+    <div align="center">
+      <form id="playerform" onsubmit="return false;">
+      <input type="text" name="date" placeholder="Date">
+      <br><br>
+      <input type="text" name="player" placeholder="Wiki Player name">
+      <br>
+      <input id= "team" type="checkbox" name="team"> Team
+      <input id = "play" type="checkbox" name="play"> Player
+      <br><br>
+      <button id="playerButton">Retrieve Wiki Data</button>
+      </form>
+    </div>
+      <div id="teamdata" align="center"></div>
+      <div id="playerdata" align="center"></div>
+      <div class="map"></div>
+      <div id="results"></div>
+      <div id="borders">
+      <div id="plxwork": style="width: 50%;
+      height: 750px; float:left;  border: solid 1px; overflow-y: auto;">
+      <h3> Tweets </h3>
+      </div>
+    <div id="plxwork2": style="width: 25%; height: 250px; float:left; border: solid 1px; overflow-y: auto;">
+      <h3> Most Active Users </h3>
+    </div>
+    <div id="plxwork3": style="width: 25%; height: 250px; float:left; border: solid 1px; overflow-y: auto;">
+      <h3> Most Active Words </h3>
+    </div>
+    <div id ="images": style="width: 10%; height: 500px; float:left; border: solid 1px; overflow-y: auto;">
+    </div>
+    <div id="map-canvas": style="width:40%; height:500px; border: float:left; solid 1px; "/>
+    </div>
+
+    <!-- <div id="plxwork4": style="width: 55%; height: 500px; border: solid 1px; float:right;">
+    </div> -->
+</div>
+    </div>
+<script>
+$("#borders").hide();
+function sendAjaxQuery(url, data) {
+  $.ajax({
+    type: 'POST',
+    url: 'postFile.html',
+    data: data,
+    dataType:'json',
+    success: function (data) {
+      console.log(data)
+          var tweets = data.tweets;
+          var flickr = data.flickr.photos.photo;
+          //var query = data[0];
+
+          $("#borders").show();
+          var tweetsA = [];
+          var picsA = [];
+          $('#plxwork').remove();
+          $('#results').append('<div id="plxwork": style="width: 50%; height: 750px; float:left;  border: solid 1px; overflow-y: auto;"><h3> Tweets </h3></div>');
+          $('#plxwork2').remove();
+          $('#results').append('<div id="plxwork2": style="width: 25%; height: 200px; border: solid 1px; float:left; overflow-y: auto;"><h3> Most Active Users </h3></div>');
+          $('#plxwork3').remove();
+          $('#results').append('<div id="plxwork3": style="width: 25%; height: 200px; border: solid 1px; float:left; overflow-y: auto;"><h3> Most Active Words </h3></div>');
+          $('#map-canvas').remove();
+          $('#results').append('<div id="map-canvas": style="width:42.5%; height:500px; border: solid 1px; float:left;"/></div>');
+          $('#images').remove();
+          $('#results').append('<div id="images": style="width: 7.5%; height: 500px; float:left; border: solid 1px; overflow-y: auto;"/></div>');
+          // flick = [];
+          flick = flickr.map(function(photo){
+            return "https://farm" + photo.farm +
+            ".staticflickr.com/" +
+            photo.server + "/" +
+            photo.id + "_" +
+            photo.secret + "_t" + ".jpg";
+          });
+          console.log(flick)
+          for (var i=0; i<flick.length; i++){
+            $("<img/>").attr("src", flick[i]).appendTo("#images")
+          }
+          for (var index in tweets){
+           tweetsA.push(tweets[index].text);;
+           var x = "<img src = '"+tweets[index].user.profile_image_url+"'>";
+           $("#plxwork").append("<p>"+"AUTHOR: "+x+tweets[index].user.name+"   "+"@"+tweets[index].user.screen_name+"</p>")
+           $("#plxwork").append("<p>"+"TWEET: "+"  "+tweets[index].text+"</p>")
+         }
+// })
+  function sortObject (mydict) {
+              var keys = [];
+              var arr = [];
+              for(var key in mydict) {
+                arr.push({key:key, val: mydict[key]})
+              }
+              arr.sort(function(a, b) {
+                return b.val - a.val;
+              })
+              for (i=0; i<10; i++){
+                if (typeof arr[i] != 'undefined' ){
+                  keys = keys.concat(arr[i])
+                }
+              }
+              return keys
+            }
+            var mostFrequentWords = [];
+                    var frequentWords = [];
+                    var activeUsers = []; //an array of all the users in all the retrieved tweet
+                    var mostActiveUsers = {}; //an object of the top 10 most active users and their frequency
+                    var regex = /\B@\w+/gi; //regular expression to extract all the words containing @
+                    var regex1 = /\w+/gi; //regex to extract all non words symbol
+                    for ( i = 0 ; i < tweetsA.length; i++) { //tweetsA is a list of all the retrieved tweets as a string
+                      /* loop through all the retrieved tweets and extract the all the active users*/
+                      while((m = regex.exec(tweetsA[i])) != null) {
+                        activeUsers = activeUsers.concat(m[0]);
+                      }
+                      while((j = regex1.exec(tweetsA[i])) != null) {
+                        frequentWords = frequentWords.concat(j[0]);
+                      }
+                    }
+                    // var stopWords = ["https", "http", "t", "co", "s", "i", "an", "it"]
+                    //
+                    // for (i=0; i< frequentWords.length; i++){
+                    //    for (j=0; j<stopWords.length; j++){
+                    //       if(frequentWords[i].indexOf(stopWords[j].key) !== -1) {
+                    //          frequentWords = frequentWords[i].replace(stopWords[j],' ');
+                    //        }
+                    //    }
+                    // }
+                     //loop through all the retrieved tweets and remove any punctuations and hashtag
+                   // and return an array of the retrieved tweets
+                    var arrayOfTweets = tweetsA.map(function (str) {
+                      return str.replace(regex1, '');
+                    });
+                    /* loop through all active users in from retrieved tweets, then compute a frequency
+                    of all the active users */
+                    for (i = 0; i < activeUsers.length; i++){
+                      if (activeUsers[i] in mostActiveUsers){
+                        mostActiveUsers[activeUsers[i]] += 1
+                      }else{
+                        mostActiveUsers[activeUsers[i]] = 1
+                      }
+                    }
+                    for (i = 0; i < frequentWords.length; i++){
+                      if (frequentWords[i] in mostFrequentWords){
+                        mostFrequentWords[frequentWords[i]] += 1
+                      }else{
+                        mostFrequentWords[frequentWords[i]] = 1
+                      }
+                    }
+                    mostActiveUsers = sortObject(mostActiveUsers); //sort the most active users by frequency and retrieve the top 10
+                    mostFrequentWords = sortObject(mostFrequentWords)
+                    for (i in mostActiveUsers){
+                      $("#plxwork2").append("<p>"+mostActiveUsers[i].key+  "   "  +mostActiveUsers[i].val+" tweets" +"</p>")
+                    }
+                    for (i in mostFrequentWords){
+                      $("#plxwork3").append("<p>"+mostFrequentWords[i].key+  ":    "  +mostFrequentWords[i].val+"</p>")
+                    }
+            var mapp = [];
+            //Here we process the tweet information getting the bits we need for the map generation
+            function initialize(){
+              for (index in data){
+                for (var i in data[index].coordinates)
+                //This is to ensure the tweets we are getting contain geo coordinates
+                if (data[index].geo != 'null'){
+                  mapp.push(data[index].coordinates[i])
+                }
+              }
+              if (mapp.length == 0){
+                $("#map-canvas").append("<p>"+"There are no geo-tagged tweets"+"</p>")
+              }
+              var lat = mapp[1][1]
+              var lng = mapp[1][0]
+              var myLatlng = new google.maps.LatLng(lat, lng);
+              var mapOptions = { center: myLatlng, zoom: 17 }
+              map = new google.maps.Map(document.getElementById("map-canvas"),  mapOptions);
+              for (i =0; i < mapp.length-1; i+=2){
+                for (j=0; j <mapp[i+1].length - 1; j++){
+                  var markers = [];
+                  //The Latitude and longitude for each tweet is taking from the coordinates of
+                  //tweet if it is geo tagged.
+                  var myLatlng2 = new google.maps.LatLng(mapp[i+1][j+1], mapp[i+1][j]);
+                  //For each tweet create a marker and then add the marker to an array of markers
+                  // and update/position the map
+                  var marker = new google.maps.Marker({
+                    id: i,
+                    position: myLatlng2,
+                    map: map,
+                    title: '@' + data[index].user.screen_name + ':' + data[index].text,
+                    icon: {
+                      url: data[index].user.profile_image_url,
+                      size: new google.maps.Size(64, 64),
+                      origin: new google.maps.Point(0, 0),
+                      anchor: new google.maps.Point(32, 32),
+                      scaledSize: new google.maps.Size(40, 40)
+                    }
+                  });
+                  //markers.push(marker);
+                  var infowindow = new google.maps.InfoWindow({
+                    content: data[i].text,
+                    maxWidth: 200
+                  });
+                  infowindow.open(map, marker);
+                  google.maps.event.addListener(marker, 'click', function() {
+                    infowindow.open(map, marker);
+                  });
+                }
+              }
+            }
+            google.maps.event.addDomListener(window, 'load', initialize());
+    },
+    error: function (xhr, status, error) {
+        console.log('Error: ' + error.message);
+       alert('error connecting');
+    }
+});
+}
+function sendPlayerQuery(url,data) {
+  $.ajax({
+    type: 'POST',
+    url: 'playerFile.html',
+    data: data,
+    dataType:'json',
+    success: function (data) {
+        console.log(data)
+        var playerdata = $('#playerdata');
+        var teamdata = $('#teamdata');
+        if (document.getElementById("team").checked) {
+          //alert("sa")
+          var rdf = data[0].results.bindings;
+          var clubUri = data[1].club;
+          var clublink = "<a href="+clubUri+">"+rdf[0].club_name.value+"</a>"
+          var managerUri = rdf[0].manager.value;
+          var manager_image = "<img src = "+rdf[0].manager_image.value+">";
+          var managerlink = "<a href =" +managerUri+">"+rdf[0].manager_name.value+"</a>"
+          var man = managerUri.replace('http://dbpedia.org/resource/','');
+          var stadiumUri = rdf[0].stadium.value;
+          var stadium_image = "<img src = "+rdf[0].stadium_image.value+">";
+          var stad = stadiumUri.replace('http://dbpedia.org/resource/','');
+          var stadiumlink = "<a href =" +stadiumUri+">"+rdf[0].stadium_name.value+"</a>"
+          var team = $("<div class='uri' id="+"team"+" about="+clubUri+"></div>")
+          team.append("<h1 property= 'dbp:clubname' class='literal' xml:lang='en'>"+clublink+"</h1>")
+          team.append("<h1>"+"Description: "+"</h1>"+"<p property= 'dbo:abstract' class='literal' xml:lang='en'>"+rdf[0].description.value+"</p>")
+          teamdata.append(team);
+          var manager = $("<div class='uri' id='manager' property='dbo:manager' about="+managerUri+"></div>")
+          manager.append("<h1 class='uri' property="+'dbr:'+man+">"+"Manager: "+"</h1>"+"<p property='dbp:name' class='literal'>"+managerlink+"</p>")
+          manager.append("<p property='dbo:thumbnail' class='uri'>"+manager_image+"</p>")
+          team.append(manager)
+          var stadium = $("<div class='uri' id='stadium' property= 'dbo:ground' about="+stadiumUri+"></div>")
+          stadium.append("<h1 class='uri' property="+'dbr:'+stad+">"+"Stadium: "+ "</h1>"+"<p property='dbp:name' class='literal'>"+stadiumlink+"</p>")
+          stadium.append("<p property='dbo:thumbnail' class='uri'>"+stadium_image+"</p>")
+          team.append(stadium)
+          var players = $("<div class ='uri' id='players' property= 'dbp:name'>"+"</div>")
+          players.append("<h1>"+"Players:"+"</h1>")
+          for (var index in rdf){
+              var player_image = "<img src = '"+rdf[index].player_image.value+"'>";
+              var playerUri = rdf[index].players.value;
+              var playerLink = "<a property='dbp:fullname' href =" +playerUri+">"+rdf[index].player_name.value+"</a>"
+              var play = playerUri.replace('http://dbpedia.org/resource/','');
+              var posUri = rdf[index].player_pos.value
+              var pos = posUri.replace('http://dbpedia.org/resource/','');
+              players.append("<p property='dbo:thumbnail' class='uri'>"+player_image+"</p>")
+              players.append("<p class='uri' property='dbr:"+play+"' "+"about="+playerUri+">"+playerLink+"</p>")
+              players.append("<p property='dbo:birthDate' dataType='http://www.w3.org/2001/XMLSchema#date' >"+rdf[index].player_birthdate.value+"</p>")
+              team.append(players);
+              var position = $("<div id='position' class='uri' property='dbo:position' xml:lang='en' about="+posUri+"></div>");
+              position.append("<p property="+'dbr:'+pos+">"+rdf[index].player_position.value+"</p>")
+              players.append(position);
+          }
+        }
+        if (document.getElementById("play").checked == true) {
+          var rdf = data[0].results.bindings[0];
+          var playerUri = data[1].player;
+          //var playerLink = "<a href="+playerUri">"+rdf[0].name.value+"</a>";
+          var image = "<img src = "+rdf.image.value+">";
+          var description = rdf.description.value;
+          var birthDate = rdf.birthdate.value;
+          var birthPlace = rdf.birthplace.value;
+          var currentClub = rdf.currentclub.value;
+          var club = currentClub.replace('http://dbpedia.org/resource/','');
+          var clubname = rdf.club.value;
+          var height = rdf.height.value;
+          var number = rdf.number.value;
+          var posUri = rdf.player_position.value;
+          var pos = posUri.replace('http://dbpedia.org/resource/','');
+          var position = rdf.position.value;
+          var player = $("<div class='uri' id="+"player"+" about="+playerUri+"></div>");
+        //  player.append("<h1 property= 'dbp:fullname' class='literal' xml:lang='en'>"+playerLink+"</h1>");
+          player.append("<p property='dbo:thumbnail' class='uri'>"+image+"</p>");
+          player.append("<h1>"+"Description: "+"</h1>"+"<p property= 'dbo:abstract' class='literal' xml:lang='en'>"+description+"</p>");
+          player.append("<h1>"+"Birth Date: "+"</h1>"+"<p property= 'dbp:birthDate' class='typed-literal' >"+birthDate+"</p>");
+          player.append("<h1>"+"Birth Place: "+"</h1>"+"<p property= 'dbp:birthPlace' class='literal' xml:lang='en'>"+birthPlace+"</p>");
+          var team = $("<div id='team' class='uri' property='dbp:currentclub' about="+currentClub+"></div>")
+          team.append("<h1>"+"Current Club: "+"</h1>"+"<p property="+'dbr:'+club+">"+clubname+"</p>");
+          player.append(team);
+          player.append("<h1>"+"Height: "+"</h1>"+"<p property= 'dbo:height' class='typed-literal'>"+height+"</p>");
+          player.append("<h1>"+"Club Number: "+"</h1>"+"<p property= 'dbp:clubnumber' class='literal'>"+number+"</p>");
+          var position = $("<div id='position' class='uri' property='dbo:position' xml:lang='en' about="+posUri+"></div>");
+          position.append("<h1>"+"Position: "+"</h1>"+"<p property="+'dbr:'+pos+">"+rdf.position.value+"</p>");
+          player.append(position);
+          playerdata.append(player);
+        }
+      },
+      error: function (xhr, status, error) {
+        console.log('Error: ' + error.message);
+       alert('error connecting');
+     }
+    });
+}
+$.fn.serializeObject = function () {
+  var o = {};
+  var a = this.serializeArray();
+  $.each(a, function () {
+    if (o[this.name] !== undefined) {
+      if (!o[this.name].push) {
+        o[this.name] = [o[this.name]];
+      }
+      o[this.name].push(this.value || '');
+    } else {
+      o[this.name] = this.value || '';
+    }
+  });
+  return o;
+};
+function playerData() {
+  var form = document.getElementById('playerform');
+  sendPlayerQuery('http://localhost:3000/',JSON.stringify($('form').serializeObject()));
+}
+function sendData() {
+  var form = document.getElementById('myForm');
+  sendAjaxQuery('http://localhost:3000/', JSON.stringify($('form').serializeObject()));
+}
+var playerButton =document.getElementById('playerButton');
+var sendButton = document.getElementById('sendButton');
+sendButton.onclick = sendData;
+playerButton.onclick = playerData;
+</script>
+</head>
+</html>
